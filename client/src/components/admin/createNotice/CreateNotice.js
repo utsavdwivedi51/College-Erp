@@ -6,8 +6,8 @@ import Body from "./Body";
 
 const CreateNotice = () => {
   return (
-    <div className="bg-[#d6d9e0] h-screen flex items-center justify-center">
-      <div className="flex flex-col  bg-[#f4f6fa] h-5/6 w-[95%] rounded-2xl shadow-2xl space-y-6 overflow-y-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 p-4 md:p-6 flex items-center justify-center">
+      <div className="flex flex-col bg-white/90 backdrop-blur-md h-[95vh] w-full max-w-[1500px] rounded-3xl shadow-[0_20px_60px_rgba(15,23,42,0.15)] border border-white/70 space-y-5 overflow-hidden">
         <Header />
         <div className="flex flex-[0.95]">
           <Sidebar />

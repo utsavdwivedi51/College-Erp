@@ -8,22 +8,26 @@ import Body from "./Body";
 
 const Attendance = () => {
   const user = JSON.parse(localStorage.getItem("user"));
+  const userResult = user?.result;
 
   const dispatch = useDispatch();
   useEffect(() => {
+    if (!userResult) return;
+
     dispatch(
       getAttendance(
-        user.result.department,
-        user.result.year,
-        user.result.section
+        userResult.department,
+        userResult.year,
+        userResult.section
       )
     );
-  }, [dispatch]);
+  }, [dispatch, userResult]);
+
   return (
-    <div className="bg-[#d6d9e0] h-screen flex items-center justify-center">
-      <div className="flex flex-col  bg-[#f4f6fa] h-5/6 w-[95%] rounded-2xl shadow-2xl space-y-6 overflow-y-hidden">
+    <div className="bg-gradient-to-br from-slate-100 via-cyan-50 to-blue-100 min-h-screen flex items-center justify-center p-4 md:p-6">
+      <div className="flex flex-col bg-slate-50/95 h-[95vh] w-full rounded-3xl shadow-2xl shadow-slate-300/50 space-y-4 overflow-hidden border border-white/60">
         <Header />
-        <div className="flex flex-[0.95]">
+        <div className="flex flex-[0.95] px-4 pb-4 gap-3 overflow-hidden">
           <Sidebar />
           <Body />
         </div>

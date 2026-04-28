@@ -45,6 +45,10 @@ const facultySchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 export default mongoose.model("faculty", facultySchema);

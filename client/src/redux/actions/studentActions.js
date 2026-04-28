@@ -6,6 +6,8 @@ import {
   ATTENDANCE,
   UPDATE_STUDENT,
   GET_SUBJECT,
+  GET_STUDENT_ASSIGNMENTS,
+  SUBMIT_ASSIGNMENT,
 } from "../actionTypes";
 import * as api from "../api";
 
@@ -83,3 +85,23 @@ export const getAttendance =
       dispatch({ type: SET_ERRORS, payload: error.response.data });
     }
   };
+
+export const getStudentAssignments = () => async (dispatch) => {
+  try {
+    const { data } = await api.getStudentAssignments();
+    dispatch({ type: GET_STUDENT_ASSIGNMENTS, payload: data });
+  } catch (error) {
+    dispatch({ type: SET_ERRORS, payload: error.response.data });
+  }
+};
+
+export const submitAssignment = (assignmentId, formData) => async (dispatch) => {
+  try {
+    await api.submitAssignment(assignmentId, formData);
+    dispatch({ type: SUBMIT_ASSIGNMENT, payload: true });
+    dispatch(getStudentAssignments());
+    alert("Assignment submitted successfully");
+  } catch (error) {
+    dispatch({ type: SET_ERRORS, payload: error.response.data });
+  }
+};

@@ -24,6 +24,7 @@ import {
   CREATE_NOTICE,
   GET_NOTICE,
   SET_CREATED_FACULTY_CREDENTIALS,
+  SET_BULK_OPERATION_RESULT,
 } from "../actionTypes";
 import * as api from "../api";
 
@@ -253,5 +254,52 @@ export const getNotice = (formData) => async (dispatch) => {
     dispatch({ type: GET_NOTICE, payload: data });
   } catch (error) {
     dispatch({ type: SET_ERRORS, payload: error.response.data });
+  }
+};
+
+export const bulkAddFaculty = (facultyList) => async (dispatch) => {
+  try {
+    const { data } = await api.bulkAddFaculty(facultyList);
+    dispatch({ type: SET_BULK_OPERATION_RESULT, payload: data });
+    dispatch(getAllFaculty());
+    return data;
+  } catch (error) {
+    const payload = error?.response?.data || {
+      backendError: "Bulk faculty operation failed",
+    };
+    dispatch({ type: SET_ERRORS, payload });
+    throw payload;
+  }
+};
+
+export const bulkAddStudent = (studentList) => async (dispatch) => {
+  try {
+    const { data } = await api.bulkAddStudent(studentList);
+    dispatch({ type: SET_BULK_OPERATION_RESULT, payload: data });
+    dispatch(getAllStudent());
+    return data;
+  } catch (error) {
+    const payload = error?.response?.data || {
+      backendError: "Bulk student operation failed",
+    };
+    dispatch({ type: SET_ERRORS, payload });
+    throw payload;
+  }
+};
+
+export const bulkUpdateUserStatus = (formData) => async (dispatch) => {
+  try {
+    const { data } = await api.bulkUpdateUserStatus(formData);
+    dispatch({ type: SET_BULK_OPERATION_RESULT, payload: data });
+    dispatch(getAllAdmin());
+    dispatch(getAllFaculty());
+    dispatch(getAllStudent());
+    return data;
+  } catch (error) {
+    const payload = error?.response?.data || {
+      backendError: "Bulk status update failed",
+    };
+    dispatch({ type: SET_ERRORS, payload });
+    throw payload;
   }
 };

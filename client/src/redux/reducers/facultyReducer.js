@@ -7,6 +7,11 @@ import {
   MARKS_UPLOADED,
   UPDATE_FACULTY,
   UPDATE_PASSWORD,
+  CREATE_ASSIGNMENT,
+  GET_FACULTY_ASSIGNMENTS,
+  UPDATE_ASSIGNMENT,
+  DELETE_ASSIGNMENT,
+  GET_ASSIGNMENT_SUBMISSIONS,
 } from "../actionTypes";
 
 const initialState = {
@@ -17,6 +22,11 @@ const initialState = {
   marksUploaded: false,
   attendanceUploaded: false,
   tests: [],
+  assignments: [],
+  assignmentSubmissions: [],
+  assignmentCreated: false,
+  assignmentUpdated: false,
+  assignmentDeleted: false,
 };
 
 const facultyReducer = (state = initialState, action) => {
@@ -56,6 +66,31 @@ const facultyReducer = (state = initialState, action) => {
       return {
         ...state,
         attendanceUploaded: action.payload,
+      };
+    case CREATE_ASSIGNMENT:
+      return {
+        ...state,
+        assignmentCreated: action.payload,
+      };
+    case GET_FACULTY_ASSIGNMENTS:
+      return {
+        ...state,
+        assignments: action.payload,
+      };
+    case UPDATE_ASSIGNMENT:
+      return {
+        ...state,
+        assignmentUpdated: action.payload,
+      };
+    case DELETE_ASSIGNMENT:
+      return {
+        ...state,
+        assignmentDeleted: action.payload,
+      };
+    case GET_ASSIGNMENT_SUBMISSIONS:
+      return {
+        ...state,
+        assignmentSubmissions: action.payload,
       };
 
     default:

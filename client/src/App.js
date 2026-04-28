@@ -23,6 +23,7 @@ import FacultyFirstTimePassword from "./components/faculty/profile/update/firstT
 import FacultyPassword from "./components/faculty/profile/update/password/Password";
 import FacultyUpdate from "./components/faculty/profile/update/Update";
 import UploadMarks from "./components/faculty/uploadMarks/UploadMarks";
+import FacultyAssignments from "./components/faculty/assignments/Assignments";
 import AdminLogin from "./components/login/adminLogin/AdminLogin";
 import FacultyLogin from "./components/login/facultyLogin/FacultyLogin";
 import Login from "./components/login/Login";
@@ -36,12 +37,14 @@ import StudentPassword from "./components/student/profile/update/password/Passwo
 import SubjectList from "./components/student/subjectList/SubjectList";
 import TestResult from "./components/student/testResult/TestResult";
 import Attendance from "./components/student/attendance/Attendance";
+import StudentAssignments from "./components/student/assignments/Assignments";
 import DeleteAdmin from "./components/admin/deleteAdmin/DeleteAdmin";
 import DeleteDepartment from "./components/admin/deleteDepartment/DeleteDepartment";
 import DeleteFaculty from "./components/admin/deleteFaculty/DeleteFaculty";
 import DeleteStudent from "./components/admin/deleteStudent/DeleteStudent";
 import DeleteSubject from "./components/admin/deleteSubject/DeleteSubject";
 import CreateNotice from "./components/admin/createNotice/CreateNotice";
+import BulkOperations from "./components/admin/bulkOperations/BulkOperations";
 
 const App = () => {
   return (
@@ -60,6 +63,7 @@ const App = () => {
         element={<AdminFirstTimePassword />}
       />
       <Route path="/admin/createnotice" element={<CreateNotice />} />
+      <Route path="/admin/bulk-operations" element={<BulkOperations />} />
       <Route path="/admin/addadmin" element={<AddAdmin />} />
       <Route path="/admin/deleteadmin" element={<DeleteAdmin />} />
       <Route path="/admin/adddepartment" element={<AddDepartment />} />
@@ -85,6 +89,7 @@ const App = () => {
       <Route path="/faculty/createtest" element={<CreateTest />} />
       <Route path="/faculty/uploadmarks" element={<UploadMarks />} />
       <Route path="/faculty/markattendance" element={<MarkAttendance />} />
+      <Route path="/faculty/assignments" element={<FacultyAssignments />} />
 
       {/* Student  */}
 
@@ -97,6 +102,7 @@ const App = () => {
       <Route path="/student/subjectlist" element={<SubjectList />} />
       <Route path="/student/testresult" element={<TestResult />} />
       <Route path="/student/attendance" element={<Attendance />} />
+      <Route path="/student/assignments" element={<StudentAssignments />} />
     </Routes>
   );
 };

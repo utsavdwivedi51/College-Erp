@@ -4,8 +4,22 @@ import Student from "../models/student.js";
 import Subject from "../models/subject.js";
 import Marks from "../models/marks.js";
 import Attendence from "../models/attendance.js";
+import Assignment from "../models/assignment.js";
+import AssignmentSubmission from "../models/assignmentSubmission.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+
+const sanitizeAttachments = (attachments = []) => {
+  if (!Array.isArray(attachments)) return [];
+  return attachments
+    .map((file) => ({
+      name: file?.name || "file",
+      type: file?.type || "application/octet-stream",
+      size: Number(file?.size) || 0,
+      content: file?.content || "",
+    }))
+    .filter((file) => file.content);
+};
 
 export const studentLogin = async (req, res) => {
   const { username, password } = req.body;
@@ -15,6 +29,10 @@ export const studentLogin = async (req, res) => {
     if (!existingStudent) {
       errors.usernameError = "Student doesn't exist.";
       return res.status(404).json(errors);
+    }
+    if (existingStudent.isActive === false) {
+      errors.passwordError = "Account is inactive. Please contact admin.";
+      return res.status(403).json(errors);
     }
     const isPasswordCorrect = await bcrypt.compare(
       password,
@@ -203,5 +221,128 @@ export const attendance = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json(error);
+  }
+};
+
+export const getStudentAssignments = async (req, res) => {
+  try {
+    const studentUser = await Student.findById(req.userId);
+    if (!studentUser) {
+      return res.status(404).json({ backendError: "Student not found" });
+    }
+
+    const assignments = await Assignment.find({
+      department: studentUser.department,
+      year: studentUser.year,
+      section: studentUser.section,
+      isActive: true,
+    }).sort({ createdAt: -1 });
+
+    const assignmentIds = assignments.map((assignment) => assignment._id);
+
+    const mySubmissions = await AssignmentSubmission.find({
+      assignment: { $in: assignmentIds },
+      student: studentUser._id,
+    });
+
+    const submissionMap = new Map(
+      mySubmissions.map((submission) => [
+        String(submission.assignment),
+        submission,
+      ])
+    );
+
+    const result = assignments.map((assignment) => {
+      const submission = submissionMap.get(String(assignment._id));
+      const now = new Date();
+      const deadlineDate = new Date(assignment.deadline);
+      const isOverdue = now > deadlineDate && !submission;
+
+      return {
+        ...assignment.toObject(),
+        submission: submission || null,
+        status: submission ? "submitted" : isOverdue ? "overdue" : "pending",
+      };
+    });
+
+    return res.status(200).json({ result });
+  } catch (error) {
+    return res.status(500).json({ backendError: error.message || error });
+  }
+};
+
+export const submitAssignment = async (req, res) => {
+  try {
+    const { assignmentId } = req.params;
+    const { notes, attachments } = req.body;
+
+    const studentUser = await Student.findById(req.userId);
+    if (!studentUser) {
+      return res.status(404).json({ backendError: "Student not found" });
+    }
+
+    const assignment = await Assignment.findById(assignmentId);
+    if (!assignment || !assignment.isActive) {
+      return res.status(404).json({ backendError: "Assignment not found" });
+    }
+
+    const isClassMatch =
+      assignment.department === studentUser.department &&
+      assignment.year === studentUser.year &&
+      assignment.section === studentUser.section;
+
+    if (!isClassMatch) {
+      return res
+        .status(403)
+        .json({ backendError: "This assignment is not assigned to your class" });
+    }
+
+    const sanitizedAttachments = sanitizeAttachments(attachments);
+    if (sanitizedAttachments.length === 0) {
+      return res
+        .status(400)
+        .json({ backendError: "Please attach at least one submission file" });
+    }
+
+    const now = new Date();
+    const isLate = now > new Date(assignment.deadline);
+
+    const existingSubmission = await AssignmentSubmission.findOne({
+      assignment: assignment._id,
+      student: studentUser._id,
+    });
+
+    if (existingSubmission) {
+      existingSubmission.notes = notes?.trim() || "";
+      existingSubmission.attachments = sanitizedAttachments;
+      existingSubmission.submittedAt = now;
+      existingSubmission.isLate = isLate;
+      await existingSubmission.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Assignment submission updated",
+        result: existingSubmission,
+      });
+    }
+
+    const newSubmission = await AssignmentSubmission.create({
+      assignment: assignment._id,
+      student: studentUser._id,
+      studentName: studentUser.name,
+      studentUsername: studentUser.username,
+      notes: notes?.trim() || "",
+      attachments: sanitizedAttachments,
+      submittedAt: now,
+      isLate,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Assignment submitted successfully",
+      result: newSubmission,
+    });
+  } catch (error) {
+    return res.status(500).json({ backendError: error.message || error });
   }
 };

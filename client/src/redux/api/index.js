@@ -5,9 +5,8 @@ const API = axios.create({ baseURL: "http://localhost:5001/" });
 
 API.interceptors.request.use((req) => {
   if (localStorage.getItem("user")) {
-    req.headers.Authorization = `Bearer ${
-      JSON.parse(localStorage.getItem("user")).token
-    }`;
+    req.headers.Authorization = `Bearer ${JSON.parse(localStorage.getItem("user")).token
+      }`;
   }
   return req;
 });
@@ -51,6 +50,8 @@ export const addDepartment = (department) =>
 
 export const addFaculty = (faculty) =>
   API.post("/api/admin/addfaculty", faculty);
+export const bulkAddFaculty = (facultyList) =>
+  API.post("/api/admin/bulkaddfaculty", { facultyList });
 
 export const getFaculty = (department) =>
   API.post("/api/admin/getfaculty", department);
@@ -62,6 +63,11 @@ export const getSubject = (subject) =>
 
 export const addStudent = (student) =>
   API.post("/api/admin/addstudent", student);
+export const bulkAddStudent = (studentList) =>
+  API.post("/api/admin/bulkaddstudent", { studentList });
+
+export const bulkUpdateUserStatus = (formData) =>
+  API.post("/api/admin/bulkupdatestatus", formData);
 
 export const getStudent = (student) =>
   API.post("/api/admin/getstudent", student);
@@ -85,6 +91,14 @@ export const getMarksStudent = (student) =>
 export const uploadMarks = (data) => API.post("/api/faculty/uploadmarks", data);
 export const markAttendance = (data) =>
   API.post("/api/faculty/markattendance", data);
+export const createAssignment = (data) => API.post("/api/faculty/assignments", data);
+export const getFacultyAssignments = () => API.get("/api/faculty/assignments");
+export const updateAssignment = (assignmentId, data) =>
+  API.patch(`/api/faculty/assignments/${assignmentId}`, data);
+export const deleteAssignment = (assignmentId) =>
+  API.delete(`/api/faculty/assignments/${assignmentId}`);
+export const getAssignmentSubmissions = (assignmentId) =>
+  API.get(`/api/faculty/assignments/${assignmentId}/submissions`);
 
 // Student
 
@@ -100,3 +114,6 @@ export const getTestResult = (testResult) =>
   API.post("/api/student/testresult", testResult);
 export const getAttendance = (attendance) =>
   API.post("/api/student/attendance", attendance);
+export const getStudentAssignments = () => API.get("/api/student/assignments");
+export const submitAssignment = (assignmentId, data) =>
+  API.post(`/api/student/assignments/${assignmentId}/submit`, data);

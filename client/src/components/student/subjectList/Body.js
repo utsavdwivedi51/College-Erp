@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import { useDispatch, useSelector } from "react-redux";
-import { getSubject } from "../../../redux/actions/adminActions";
-import { MenuItem, Select } from "@mui/material";
 import Spinner from "../../../utils/Spinner";
 import { SET_ERRORS } from "../../../redux/actionTypes";
 import * as classes from "../../../utils/styles";
@@ -12,11 +10,6 @@ const Body = () => {
   const [error, setError] = useState({});
   const [loading, setLoading] = useState(false);
   const store = useSelector((state) => state);
-  const [value, setValue] = useState({
-    department: "",
-    year: "",
-  });
-  const [search, setSearch] = useState(false);
 
   useEffect(() => {
     if (Object.keys(store.errors).length !== 0) {
@@ -25,13 +18,6 @@ const Body = () => {
     }
   }, [store.errors]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setSearch(true);
-    setLoading(true);
-    setError({});
-    dispatch(getSubject(value));
-  };
   const subjects = useSelector((state) => state.admin.subjects.result);
 
   useEffect(() => {
@@ -40,17 +26,18 @@ const Body = () => {
 
   useEffect(() => {
     dispatch({ type: SET_ERRORS, payload: {} });
-  }, []);
+  }, [dispatch]);
 
   return (
-    <div className="flex-[0.8] mt-3">
+    <div className="flex-[0.78] mt-1 overflow-y-auto pr-1">
       <div className="space-y-5">
-        <div className="flex text-gray-400 items-center space-x-2">
+        <div className="flex text-slate-500 items-center space-x-2">
           <MenuBookIcon />
-          <h1>All Subjects</h1>
+          <h1 className="font-medium">Subject List</h1>
         </div>
-        <div className=" mr-10 bg-white rounded-xl pt-6 pl-6 h-[29.5rem]">
-          <div className="col-span-3 mr-6">
+
+        <div className="bg-white border border-slate-100 rounded-2xl p-5 min-h-[33rem] shadow-sm">
+          <div className="col-span-3">
             <div className={classes.loadingAndError}>
               {loading && (
                 <Spinner
@@ -67,6 +54,7 @@ const Body = () => {
                 </p>
               )}
             </div>
+
             {!loading &&
               Object.keys(error).length === 0 &&
               subjects?.length !== 0 && (

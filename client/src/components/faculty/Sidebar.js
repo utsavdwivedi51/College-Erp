@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import EngineeringIcon from "@mui/icons-material/Engineering";
 import AddIcon from "@mui/icons-material/Add";
+import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import { useDispatch } from "react-redux";
 import decode from "jwt-decode";
 const isNotActiveStyle =
@@ -15,11 +16,11 @@ const Sidebar = () => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const logout = () => {
+  const logout = useCallback(() => {
     alert("OOPS! Your session expired. Please Login again");
     dispatch({ type: "LOGOUT" });
-    navigate("/login/facultylogin");
-  };
+    navigate("/");
+  }, [dispatch, navigate]);
   useEffect(() => {
     const token = user?.token;
 
@@ -28,8 +29,8 @@ const Sidebar = () => {
       if (decodedToken.exp * 1000 < new Date().getTime()) logout();
     }
 
-    setUser(JSON.parse(localStorage.getItem("faculty")));
-  }, [navigate]);
+    setUser(JSON.parse(localStorage.getItem("user")));
+  }, [logout, user?.token]);
   return (
     <div className="flex-[0.2]">
       <div className="space-y-8 overflow-y-scroll scrollbar-thin scrollbar-track-white scrollbar-thumb-gray-300 h-[33rem]">
@@ -67,6 +68,14 @@ const Sidebar = () => {
             }>
             <AddIcon className="" />
             <h1 className="font-normal">Upload Marks</h1>
+          </NavLink>
+          <NavLink
+            to="/faculty/assignments"
+            className={({ isActive }) =>
+              isActive ? isActiveStyle : isNotActiveStyle
+            }>
+            <AssignmentTurnedInIcon className="" />
+            <h1 className="font-normal">Assignments</h1>
           </NavLink>
         </div>
         <div className="">

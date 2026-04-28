@@ -25,6 +25,9 @@ import {
   deleteSubject,
   createNotice,
   getNotice,
+  bulkAddFaculty,
+  bulkAddStudent,
+  bulkUpdateUserStatus,
 } from "../controller/adminController.js";
 const router = express.Router();
 
@@ -40,11 +43,14 @@ router.post("/updateprofile", auth, updateAdmin);
 router.post("/addadmin", auth, addAdmin);
 router.post("/adddepartment", auth, addDepartment);
 router.post("/addfaculty", auth, addFaculty);
+router.post("/bulkaddfaculty", auth, bulkAddFaculty);
 router.post("/getfaculty", auth, getFaculty);
 router.post("/addsubject", auth, addSubject);
 router.post("/getsubject", auth, getSubject);
 router.post("/addstudent", auth, addStudent);
+router.post("/bulkaddstudent", auth, bulkAddStudent);
 router.post("/getstudent", auth, getStudent);
+router.post("/bulkupdatestatus", auth, bulkUpdateUserStatus);
 router.post("/getnotice", auth, getNotice);
 router.post("/getadmin", auth, getAdmin);
 router.post("/deleteadmin", auth, deleteAdmin);

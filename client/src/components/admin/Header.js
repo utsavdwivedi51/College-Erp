@@ -9,30 +9,38 @@ const Header = () => {
   const navigate = useNavigate();
   const logout = () => {
     dispatch({ type: "LOGOUT" });
-    navigate("/login/adminLogin");
+    navigate("/");
   };
   return (
-    <div className="flex-[0.05] flex justify-between items-center mx-5 my-2">
-      <div className="flex items-center ">
-        <img
-          src="https://icon-library.com/images/cms-icon/cms-icon-11.jpg"
-          alt=""
-          className="h-7"
-        />
-        <h1 className="font-bold text-blue-600 text-sm">CMS</h1>
+    <div className="flex-[0.08] flex justify-between items-center mx-5 mt-4 px-4 py-3 rounded-2xl bg-white/95 border border-slate-100 shadow-sm">
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 text-white font-bold text-sm flex items-center justify-center shadow-sm">
+          ERP
+        </div>
+        <div>
+          <h1 className="font-bold text-slate-800 text-base leading-tight">
+            Admin Control Center
+          </h1>
+          <p className="text-xs text-slate-500">Manage your campus operations</p>
+        </div>
       </div>
-      <h1 className="font-semibold text-black">Welcome</h1>
-      <div className="flex items-center space-x-3">
+
+      <div className="flex items-center gap-3">
         <Avatar
-          src={user.result.avatar}
-          alt={user.result.name.charAt(0)}
-          sx={{ width: 24, height: 24 }}
-          className="border-blue-600 border-2"
+          src={user?.result?.avatar}
+          alt={user?.result?.name?.charAt(0)}
+          sx={{ width: 34, height: 34 }}
+          className="border-blue-200 border"
         />
-        <h1>{user.result.name.split(" ")[0]}</h1>
+        <div className="text-right">
+          <h1 className="font-semibold text-slate-700 text-sm">
+            {user?.result?.name?.split(" ")[0] || "Admin"}
+          </h1>
+          <p className="text-xs text-slate-500">Welcome back 👋</p>
+        </div>
         <LogoutIcon
           onClick={logout}
-          className="cursor-pointer hover:scale-125 transition-all "
+          className="cursor-pointer text-slate-600 hover:text-red-500 hover:scale-110 transition-all"
         />
       </div>
     </div>

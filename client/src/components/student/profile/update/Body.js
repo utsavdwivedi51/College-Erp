@@ -74,26 +74,26 @@ const Body = () => {
 
   useEffect(() => {
     dispatch({ type: SET_ERRORS, payload: {} });
-  }, []);
+  }, [dispatch]);
 
   return (
-    <div className="flex-[0.8] mt-3">
+    <div className="flex-[0.78] mt-1 overflow-y-auto pr-1">
       <div className="space-y-5">
-        <div className="flex  items-center justify-between mr-8">
-          <div className="flex space-x-2 text-gray-400">
+        <div className="flex items-center justify-between">
+          <div className="flex space-x-2 text-slate-500">
             <SecurityUpdateIcon />
-            <h1>Update</h1>
+            <h1 className="font-medium">Update Profile</h1>
           </div>
 
           <div
             onClick={() => navigate("/student/update/password")}
-            className="flex space-x-2 cursor-pointer">
-            <VisibilityOffIcon />
-            <h1 className="font-bold">Password</h1>
+            className="flex items-center gap-2 cursor-pointer bg-cyan-50 text-cyan-700 border border-cyan-100 px-3 py-1.5 rounded-xl hover:bg-cyan-100 transition-all">
+            <VisibilityOffIcon sx={{ fontSize: 20 }} />
+            <h1 className="font-semibold text-sm">Password</h1>
           </div>
         </div>
 
-        <div className=" mr-10 bg-white flex flex-col rounded-xl overflow-y-scroll h-[27rem] ">
+        <div className="bg-white border border-slate-100 flex flex-col rounded-2xl overflow-y-auto h-[33rem] shadow-sm">
           <form className={classes.adminForm0} onSubmit={handleSubmit}>
             <div className={classes.adminForm1}>
               <div className={classes.adminForm2l}>
@@ -262,7 +262,7 @@ const Body = () => {
               </button>
 
               <button
-                onClick={() => navigate("/admin/profile")}
+                onClick={() => navigate("/student/profile")}
                 className={classes.adminFormClearButton}
                 type="button">
                 Cancel
@@ -278,6 +278,11 @@ const Body = () => {
                   color="#111111"
                   messageColor="blue"
                 />
+              )}
+              {!loading && Object.keys(error).length > 0 && (
+                <p className="text-sm text-red-500 font-medium text-center">
+                  {Object.values(error)[0]}
+                </p>
               )}
             </div>
           </form>

@@ -25,6 +25,7 @@ import {
   CREATE_NOTICE,
   GET_NOTICE,
   SET_CREATED_FACULTY_CREDENTIALS,
+  SET_BULK_OPERATION_RESULT,
 } from "../actionTypes";
 
 const initialState = {
@@ -53,6 +54,7 @@ const initialState = {
   subjectDeleted: false,
   noticeCreated: false,
   createdFacultyCredentials: null,
+  bulkOperationResult: null,
 };
 
 const adminReducer = (state = initialState, action) => {
@@ -122,6 +124,11 @@ const adminReducer = (state = initialState, action) => {
       return {
         ...state,
         createdFacultyCredentials: action.payload,
+      };
+    case SET_BULK_OPERATION_RESULT:
+      return {
+        ...state,
+        bulkOperationResult: action.payload,
       };
     case GET_FACULTY:
       return {

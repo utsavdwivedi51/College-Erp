@@ -8,6 +8,11 @@ import {
   GET_STUDENT,
   MARKS_UPLOADED,
   ATTENDANCE_MARKED,
+  CREATE_ASSIGNMENT,
+  GET_FACULTY_ASSIGNMENTS,
+  UPDATE_ASSIGNMENT,
+  DELETE_ASSIGNMENT,
+  GET_ASSIGNMENT_SUBMISSIONS,
 } from "../actionTypes";
 import * as api from "../api";
 
@@ -92,19 +97,70 @@ export const uploadMark =
 
 export const markAttendance =
   (checkedValue, subjectName, department, year, section) =>
-  async (dispatch) => {
-    try {
-      const formData = {
-        selectedStudents: checkedValue,
-        subjectName,
-        department,
-        year,
-        section,
-      };
-      const { data } = await api.markAttendance(formData);
-      alert("Attendance Marked Successfully");
-      dispatch({ type: ATTENDANCE_MARKED, payload: true });
-    } catch (error) {
-      dispatch({ type: SET_ERRORS, payload: error.response.data });
-    }
-  };
+    async (dispatch) => {
+      try {
+        const formData = {
+          selectedStudents: checkedValue,
+          subjectName,
+          department,
+          year,
+          section,
+        };
+        const { data } = await api.markAttendance(formData);
+        alert("Attendance Marked Successfully");
+        dispatch({ type: ATTENDANCE_MARKED, payload: true });
+      } catch (error) {
+        dispatch({ type: SET_ERRORS, payload: error.response.data });
+      }
+    };
+
+export const createAssignment = (formData) => async (dispatch) => {
+  try {
+    await api.createAssignment(formData);
+    dispatch({ type: CREATE_ASSIGNMENT, payload: true });
+    dispatch(getFacultyAssignments());
+    alert("Assignment published successfully");
+  } catch (error) {
+    dispatch({ type: SET_ERRORS, payload: error.response.data });
+  }
+};
+
+export const getFacultyAssignments = () => async (dispatch) => {
+  try {
+    const { data } = await api.getFacultyAssignments();
+    dispatch({ type: GET_FACULTY_ASSIGNMENTS, payload: data });
+  } catch (error) {
+    dispatch({ type: SET_ERRORS, payload: error.response.data });
+  }
+};
+
+export const updateAssignment = (assignmentId, formData) => async (dispatch) => {
+  try {
+    await api.updateAssignment(assignmentId, formData);
+    dispatch({ type: UPDATE_ASSIGNMENT, payload: true });
+    dispatch(getFacultyAssignments());
+    alert("Assignment updated successfully");
+  } catch (error) {
+    dispatch({ type: SET_ERRORS, payload: error.response.data });
+  }
+};
+
+export const deleteAssignment = (assignmentId) => async (dispatch) => {
+  try {
+    await api.deleteAssignment(assignmentId);
+    dispatch({ type: DELETE_ASSIGNMENT, payload: true });
+    dispatch(getFacultyAssignments());
+    alert("Assignment deleted");
+  } catch (error) {
+    dispatch({ type: SET_ERRORS, payload: error.response.data });
+  }
+};
+
+export const getAssignmentSubmissions = (assignmentId) => async (dispatch) => {
+  try {
+    const { data } = await api.getAssignmentSubmissions(assignmentId);
+    dispatch({ type: GET_ASSIGNMENT_SUBMISSIONS, payload: data });
+  } catch (error) {
+    dispatch({ type: SET_ERRORS, payload: error.response.data });
+  }
+};

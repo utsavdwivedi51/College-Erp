@@ -4,7 +4,7 @@ const Data = ({ label, value }) => {
   return (
     <div className={classes.adminForm3}>
       <h1 className={classes.adminLabel}>{label} :</h1>
-      <h2 className="font-normal text-lg bg-gray-100 shadow-xl px-2 py-1 rounded-lg">
+      <h2 className="font-medium text-slate-700 text-sm md:text-base bg-slate-50 border border-slate-200 px-3 py-2 rounded-lg">
         {value}
       </h2>
     </div>

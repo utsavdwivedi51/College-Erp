@@ -7,6 +7,30 @@ import Notice from "../models/notice.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
+const formatSequence = (value) => {
+  if (value < 10) return `00${value}`;
+  if (value < 100) return `0${value}`;
+  return `${value}`;
+};
+
+const normalizeDobPassword = (dob) => {
+  if (!dob || typeof dob !== "string") return "123456";
+  if (dob.includes("-")) {
+    const chunks = dob.split("-");
+    if (chunks.length === 3) return chunks.reverse().join("-");
+  }
+  return dob;
+};
+
+const parseOptionalNumber = (value) => {
+  if (value === undefined || value === null || value === "") return undefined;
+  const num = Number(value);
+  return Number.isNaN(num) ? undefined : num;
+};
+
+const createUsername = ({ prefix, year, departmentCode, sequence }) =>
+  `${prefix}${year}${departmentCode}${formatSequence(sequence)}`;
+
 export const adminLogin = async (req, res) => {
   const { username, password } = req.body;
   const errors = { usernameError: String, passwordError: String };
@@ -15,6 +39,10 @@ export const adminLogin = async (req, res) => {
     if (!existingAdmin) {
       errors.usernameError = "Admin doesn't exist.";
       return res.status(404).json(errors);
+    }
+    if (existingAdmin.isActive === false) {
+      errors.passwordError = "Account is inactive. Please contact super admin.";
+      return res.status(403).json(errors);
     }
     const isPasswordCorrect = await bcrypt.compare(
       password,
@@ -592,6 +620,332 @@ export const addStudent = async (req, res) => {
     const errors = { backendError: String };
     errors.backendError = error;
     res.status(500).json(errors);
+  }
+};
+
+export const bulkAddFaculty = async (req, res) => {
+  try {
+    const { facultyList } = req.body;
+    if (!Array.isArray(facultyList) || facultyList.length === 0) {
+      return res.status(400).json({
+        backendError: "facultyList must be a non-empty array",
+      });
+    }
+
+    const departmentList = await Department.find({}).select(
+      "department departmentCode"
+    );
+    const deptCodeByName = new Map(
+      departmentList.map((dep) => [dep.department, dep.departmentCode])
+    );
+
+    const counts = await Faculty.aggregate([
+      { $group: { _id: "$department", count: { $sum: 1 } } },
+    ]);
+    const facultyCountByDepartment = new Map(
+      counts.map((item) => [item._id, item.count])
+    );
+
+    const existingFaculty = await Faculty.find({}).select("email");
+    const existingEmails = new Set(
+      existingFaculty.map((item) => (item.email || "").toLowerCase())
+    );
+    const seenInRequest = new Set();
+
+    const docsToInsert = [];
+    const failures = [];
+    const credentials = [];
+
+    for (let i = 0; i < facultyList.length; i += 1) {
+      const row = facultyList[i] || {};
+      const rowNumber = i + 1;
+      const name = row.name?.trim();
+      const email = row.email?.trim().toLowerCase();
+      const dob = row.dob?.trim();
+      const department = row.department?.trim();
+      const designation = row.designation?.trim();
+      const joiningYear = Number(row.joiningYear) || new Date().getFullYear();
+
+      if (!name || !email || !dob || !department || !designation) {
+        failures.push({
+          row: rowNumber,
+          reason:
+            "Required fields missing. Required: name,email,dob,department,designation",
+        });
+        continue;
+      }
+
+      if (!deptCodeByName.has(department)) {
+        failures.push({
+          row: rowNumber,
+          reason: `Department not found: ${department}`,
+        });
+        continue;
+      }
+
+      if (existingEmails.has(email) || seenInRequest.has(email)) {
+        failures.push({ row: rowNumber, reason: `Email already exists: ${email}` });
+        continue;
+      }
+
+      seenInRequest.add(email);
+      const count = facultyCountByDepartment.get(department) || 0;
+      const username = createUsername({
+        prefix: "FAC",
+        year: new Date().getFullYear(),
+        departmentCode: deptCodeByName.get(department),
+        sequence: count,
+      });
+      facultyCountByDepartment.set(department, count + 1);
+
+      const initialPassword = normalizeDobPassword(dob);
+      const hashedPassword = await bcrypt.hash(initialPassword, 10);
+
+      docsToInsert.push({
+        name,
+        email,
+        dob,
+        department,
+        designation,
+        joiningYear,
+        gender: row.gender,
+        avatar: row.avatar,
+        contactNumber: parseOptionalNumber(row.contactNumber),
+        username,
+        password: hashedPassword,
+        passwordUpdated: false,
+        isActive: true,
+      });
+
+      credentials.push({ row: rowNumber, email, username, initialPassword });
+      existingEmails.add(email);
+    }
+
+    if (docsToInsert.length > 0) {
+      await Faculty.insertMany(docsToInsert);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Bulk faculty operation completed",
+      summary: {
+        total: facultyList.length,
+        created: docsToInsert.length,
+        failed: failures.length,
+      },
+      credentials,
+      failures,
+    });
+  } catch (error) {
+    return res.status(500).json({ backendError: error.message || error });
+  }
+};
+
+export const bulkAddStudent = async (req, res) => {
+  try {
+    const { studentList } = req.body;
+    if (!Array.isArray(studentList) || studentList.length === 0) {
+      return res.status(400).json({
+        backendError: "studentList must be a non-empty array",
+      });
+    }
+
+    const departmentList = await Department.find({}).select(
+      "department departmentCode"
+    );
+    const deptCodeByName = new Map(
+      departmentList.map((dep) => [dep.department, dep.departmentCode])
+    );
+
+    const counts = await Student.aggregate([
+      { $group: { _id: "$department", count: { $sum: 1 } } },
+    ]);
+    const studentCountByDepartment = new Map(
+      counts.map((item) => [item._id, item.count])
+    );
+
+    const existingStudents = await Student.find({}).select("email");
+    const existingEmails = new Set(
+      existingStudents.map((item) => (item.email || "").toLowerCase())
+    );
+    const seenInRequest = new Set();
+
+    const docsToInsert = [];
+    const failures = [];
+    const credentials = [];
+
+    for (let i = 0; i < studentList.length; i += 1) {
+      const row = studentList[i] || {};
+      const rowNumber = i + 1;
+      const name = row.name?.trim();
+      const email = row.email?.trim().toLowerCase();
+      const dob = row.dob?.trim();
+      const department = row.department?.trim();
+      const section = row.section?.trim();
+      const year = Number(row.year);
+
+      if (!name || !email || !dob || !department || !section || !year) {
+        failures.push({
+          row: rowNumber,
+          reason:
+            "Required fields missing. Required: name,email,dob,department,section,year",
+        });
+        continue;
+      }
+
+      if (!deptCodeByName.has(department)) {
+        failures.push({
+          row: rowNumber,
+          reason: `Department not found: ${department}`,
+        });
+        continue;
+      }
+
+      if (existingEmails.has(email) || seenInRequest.has(email)) {
+        failures.push({ row: rowNumber, reason: `Email already exists: ${email}` });
+        continue;
+      }
+
+      seenInRequest.add(email);
+      const count = studentCountByDepartment.get(department) || 0;
+      const username = createUsername({
+        prefix: "STU",
+        year: new Date().getFullYear(),
+        departmentCode: deptCodeByName.get(department),
+        sequence: count,
+      });
+      studentCountByDepartment.set(department, count + 1);
+
+      const initialPassword = normalizeDobPassword(dob);
+      const hashedPassword = await bcrypt.hash(initialPassword, 10);
+
+      docsToInsert.push({
+        name,
+        email,
+        dob,
+        department,
+        section,
+        year,
+        gender: row.gender,
+        batch: row.batch,
+        fatherName: row.fatherName,
+        motherName: row.motherName,
+        fatherContactNumber: parseOptionalNumber(row.fatherContactNumber),
+        motherContactNumber: parseOptionalNumber(row.motherContactNumber),
+        contactNumber: parseOptionalNumber(row.contactNumber),
+        avatar: row.avatar,
+        username,
+        password: hashedPassword,
+        passwordUpdated: false,
+        isActive: true,
+      });
+
+      credentials.push({ row: rowNumber, email, username, initialPassword });
+      existingEmails.add(email);
+    }
+
+    let insertedStudents = [];
+    if (docsToInsert.length > 0) {
+      insertedStudents = await Student.insertMany(docsToInsert);
+
+      const deptYearKeys = [
+        ...new Set(insertedStudents.map((item) => `${item.department}::${item.year}`)),
+      ];
+      const subjectMap = new Map();
+
+      for (let i = 0; i < deptYearKeys.length; i += 1) {
+        const [department, year] = deptYearKeys[i].split("::");
+        const subjects = await Subject.find({ department, year: Number(year) }).select(
+          "_id"
+        );
+        subjectMap.set(deptYearKeys[i], subjects.map((subject) => subject._id));
+      }
+
+      const studentSubjectUpdates = insertedStudents.map((item) => ({
+        updateOne: {
+          filter: { _id: item._id },
+          update: {
+            $set: {
+              subjects: subjectMap.get(`${item.department}::${item.year}`) || [],
+            },
+          },
+        },
+      }));
+
+      if (studentSubjectUpdates.length > 0) {
+        await Student.bulkWrite(studentSubjectUpdates);
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Bulk student operation completed",
+      summary: {
+        total: studentList.length,
+        created: docsToInsert.length,
+        failed: failures.length,
+      },
+      credentials,
+      failures,
+    });
+  } catch (error) {
+    return res.status(500).json({ backendError: error.message || error });
+  }
+};
+
+export const bulkUpdateUserStatus = async (req, res) => {
+  try {
+    const { role, identifierField = "_id", identifiers, isActive } = req.body;
+    const allowedRoles = {
+      student: Student,
+      faculty: Faculty,
+      admin: Admin,
+    };
+    const allowedIdentifierFields = ["_id", "username", "email"];
+
+    if (!allowedRoles[role]) {
+      return res.status(400).json({ backendError: "Invalid role" });
+    }
+
+    if (!allowedIdentifierFields.includes(identifierField)) {
+      return res.status(400).json({
+        backendError: "identifierField must be one of: _id, username, email",
+      });
+    }
+
+    if (!Array.isArray(identifiers) || identifiers.length === 0) {
+      return res.status(400).json({ backendError: "identifiers must be a non-empty array" });
+    }
+
+    const cleanIdentifiers = [
+      ...new Set(
+        identifiers
+          .map((item) => (item || "").toString().trim())
+          .filter((item) => item.length > 0)
+      ),
+    ];
+
+    if (cleanIdentifiers.length === 0) {
+      return res.status(400).json({ backendError: "No valid identifiers provided" });
+    }
+
+    const Model = allowedRoles[role];
+    const result = await Model.updateMany(
+      { [identifierField]: { $in: cleanIdentifiers } },
+      { $set: { isActive: Boolean(isActive) } }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: `${role} status updated successfully`,
+      summary: {
+        requested: cleanIdentifiers.length,
+        matched: result.matchedCount,
+        modified: result.modifiedCount,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({ backendError: error.message || error });
   }
 };
 
