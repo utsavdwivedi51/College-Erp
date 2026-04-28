@@ -9,6 +9,8 @@ import {
   GET_STUDENT_ASSIGNMENTS,
   SUBMIT_ASSIGNMENT,
   GET_STUDENT_DASHBOARD_STATS,
+  GET_STUDENT_FEES,
+  PAY_STUDENT_FEE,
 } from "../actionTypes";
 import * as api from "../api";
 
@@ -94,6 +96,25 @@ export const getStudentDashboardStats = () => async (dispatch) => {
       type: GET_STUDENT_DASHBOARD_STATS,
       payload: data?.result || data,
     });
+  } catch (error) {
+    dispatch({ type: SET_ERRORS, payload: error.response.data });
+  }
+};
+
+export const getStudentFees = () => async (dispatch) => {
+  try {
+    const { data } = await api.getStudentFees();
+    dispatch({ type: GET_STUDENT_FEES, payload: data?.result || data });
+  } catch (error) {
+    dispatch({ type: SET_ERRORS, payload: error.response.data });
+  }
+};
+
+export const payStudentFee = (payload) => async (dispatch) => {
+  try {
+    const { data } = await api.payStudentFee(payload);
+    dispatch({ type: PAY_STUDENT_FEE, payload: data?.result || data });
+    dispatch(getStudentFees());
   } catch (error) {
     dispatch({ type: SET_ERRORS, payload: error.response.data });
   }

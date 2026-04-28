@@ -8,6 +8,7 @@ import BoyIcon from "@mui/icons-material/Boy";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import StorageIcon from "@mui/icons-material/Storage";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { useDispatch } from "react-redux";
 import decode from "jwt-decode";
 const isNotActiveStyle =
@@ -187,6 +188,14 @@ const Sidebar = () => {
             }>
             <DeleteIcon className="" />
             <h1 className="font-medium">Delete Student</h1>
+          </NavLink>
+          <NavLink
+            to="/admin/fees"
+            className={({ isActive }) =>
+              isActive ? isActiveStyle : isNotActiveStyle
+            }>
+            <AccountBalanceWalletIcon className="" />
+            <h1 className="font-medium">Fee Monitoring</h1>
           </NavLink>
         </div>
         <div>

@@ -45,6 +45,8 @@ import DeleteStudent from "./components/admin/deleteStudent/DeleteStudent";
 import DeleteSubject from "./components/admin/deleteSubject/DeleteSubject";
 import CreateNotice from "./components/admin/createNotice/CreateNotice";
 import BulkOperations from "./components/admin/bulkOperations/BulkOperations";
+import FeeMonitoring from "./components/admin/feeMonitoring/FeeMonitoring";
+import MyFees from "./components/student/myFees/MyFees";
 
 const App = () => {
   return (
@@ -64,6 +66,7 @@ const App = () => {
       />
       <Route path="/admin/createnotice" element={<CreateNotice />} />
       <Route path="/admin/bulk-operations" element={<BulkOperations />} />
+      <Route path="/admin/fees" element={<FeeMonitoring />} />
       <Route path="/admin/addadmin" element={<AddAdmin />} />
       <Route path="/admin/deleteadmin" element={<DeleteAdmin />} />
       <Route path="/admin/adddepartment" element={<AddDepartment />} />
@@ -103,6 +106,7 @@ const App = () => {
       <Route path="/student/testresult" element={<TestResult />} />
       <Route path="/student/attendance" element={<Attendance />} />
       <Route path="/student/assignments" element={<StudentAssignments />} />
+      <Route path="/student/fees" element={<MyFees />} />
     </Routes>
   );
 };

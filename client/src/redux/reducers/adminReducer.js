@@ -27,6 +27,10 @@ import {
   SET_CREATED_FACULTY_CREDENTIALS,
   SET_BULK_OPERATION_RESULT,
   GET_ADMIN_DASHBOARD_STATS,
+  GET_ADMIN_FEES,
+  ASSIGN_FEE,
+  BATCH_ASSIGN_FEE,
+  GET_FEE_REPORT,
 } from "../actionTypes";
 
 const initialState = {
@@ -57,6 +61,9 @@ const initialState = {
   createdFacultyCredentials: null,
   bulkOperationResult: null,
   dashboardStats: null,
+  fees: [],
+  feeReport: null,
+  feeAssignmentResult: null,
 };
 
 const adminReducer = (state = initialState, action) => {
@@ -196,6 +203,26 @@ const adminReducer = (state = initialState, action) => {
       return {
         ...state,
         dashboardStats: action.payload,
+      };
+    case GET_ADMIN_FEES:
+      return {
+        ...state,
+        fees: action.payload,
+      };
+    case ASSIGN_FEE:
+      return {
+        ...state,
+        feeAssignmentResult: action.payload,
+      };
+    case BATCH_ASSIGN_FEE:
+      return {
+        ...state,
+        feeAssignmentResult: action.payload,
+      };
+    case GET_FEE_REPORT:
+      return {
+        ...state,
+        feeReport: action.payload,
       };
     default:
       return state;

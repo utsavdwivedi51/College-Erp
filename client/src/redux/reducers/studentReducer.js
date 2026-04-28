@@ -8,6 +8,8 @@ import {
   GET_STUDENT_ASSIGNMENTS,
   SUBMIT_ASSIGNMENT,
   GET_STUDENT_DASHBOARD_STATS,
+  GET_STUDENT_FEES,
+  PAY_STUDENT_FEE,
 } from "../actionTypes";
 
 const initialState = {
@@ -23,6 +25,9 @@ const initialState = {
   assignments: [],
   assignmentSubmitted: false,
   dashboardStats: null,
+  fees: [],
+  feeSummary: null,
+  feePaymentResult: null,
 };
 
 const studentReducer = (state = initialState, action) => {
@@ -67,6 +72,17 @@ const studentReducer = (state = initialState, action) => {
       return {
         ...state,
         dashboardStats: action.payload,
+      };
+    case GET_STUDENT_FEES:
+      return {
+        ...state,
+        fees: action.payload?.fees || [],
+        feeSummary: action.payload?.totals || null,
+      };
+    case PAY_STUDENT_FEE:
+      return {
+        ...state,
+        feePaymentResult: action.payload,
       };
 
     default:

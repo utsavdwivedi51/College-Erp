@@ -6,6 +6,7 @@ import EngineeringIcon from "@mui/icons-material/Engineering";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import { useDispatch } from "react-redux";
 import decode from "jwt-decode";
 
@@ -96,6 +97,14 @@ const Sidebar = () => {
             }>
             <AssignmentTurnedInIcon className="" />
             <h1 className="font-medium">Assignments</h1>
+          </NavLink>
+          <NavLink
+            to="/student/fees"
+            className={({ isActive }) =>
+              isActive ? isActiveStyle : isNotActiveStyle
+            }>
+            <ReceiptLongIcon className="" />
+            <h1 className="font-medium">My Fees</h1>
           </NavLink>
         </div>
       </div>

@@ -26,6 +26,10 @@ import {
   SET_CREATED_FACULTY_CREDENTIALS,
   SET_BULK_OPERATION_RESULT,
   GET_ADMIN_DASHBOARD_STATS,
+  GET_ADMIN_FEES,
+  ASSIGN_FEE,
+  BATCH_ASSIGN_FEE,
+  GET_FEE_REPORT,
 } from "../actionTypes";
 import * as api from "../api";
 
@@ -101,6 +105,44 @@ export const getAdminDashboardStats = () => async (dispatch) => {
       type: GET_ADMIN_DASHBOARD_STATS,
       payload: data?.result || data,
     });
+  } catch (error) {
+    console.log("Redux Error", error);
+  }
+};
+
+export const getAdminFees = (filters) => async (dispatch) => {
+  try {
+    const { data } = await api.getAdminFees(filters);
+    dispatch({ type: GET_ADMIN_FEES, payload: data?.result || data });
+  } catch (error) {
+    console.log("Redux Error", error);
+  }
+};
+
+export const assignFee = (payload) => async (dispatch) => {
+  try {
+    const { data } = await api.assignFeeToStudent(payload);
+    dispatch({ type: ASSIGN_FEE, payload: data?.result || data });
+    dispatch(getAdminFees());
+  } catch (error) {
+    console.log("Redux Error", error);
+  }
+};
+
+export const batchAssignFee = (payload) => async (dispatch) => {
+  try {
+    const { data } = await api.assignFeeToBatch(payload);
+    dispatch({ type: BATCH_ASSIGN_FEE, payload: data?.result || data });
+    dispatch(getAdminFees());
+  } catch (error) {
+    console.log("Redux Error", error);
+  }
+};
+
+export const getFeeReport = (params) => async (dispatch) => {
+  try {
+    const { data } = await api.getFeeReportByClass(params);
+    dispatch({ type: GET_FEE_REPORT, payload: data?.result || data });
   } catch (error) {
     console.log("Redux Error", error);
   }

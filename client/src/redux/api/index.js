@@ -74,6 +74,14 @@ export const getStudent = (student) =>
 export const getNotice = (notice) => API.post("/api/admin/getnotice", notice);
 export const getAdminDashboardStats = () =>
   API.get("/api/admin/dashboard-stats");
+export const getAdminFees = (params) =>
+  API.get("/api/admin/fees", { params });
+export const assignFeeToStudent = (payload) =>
+  API.post("/api/admin/fees/assign", payload);
+export const assignFeeToBatch = (payload) =>
+  API.post("/api/admin/fees/batch", payload);
+export const getFeeReportByClass = (params) =>
+  API.get("/api/admin/fees/report", { params });
 
 // Faculty
 
@@ -123,3 +131,6 @@ export const submitAssignment = (assignmentId, data) =>
   API.post(`/api/student/assignments/${assignmentId}/submit`, data);
 export const getStudentDashboardStats = () =>
   API.get("/api/student/dashboard-stats");
+export const getStudentFees = () => API.get("/api/student/fees");
+export const payStudentFee = (payload) =>
+  API.post("/api/student/fees/pay", payload);

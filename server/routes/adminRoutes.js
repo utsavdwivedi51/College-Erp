@@ -2,6 +2,12 @@ import express from "express";
 import auth from "../middleware/auth.js";
 import { getAdminDashboardStats } from "../controller/dashboardController.js";
 import {
+  assignFeeToStudent,
+  assignFeeToBatch,
+  getAdminFees,
+  getFeeReportByClass,
+} from "../controller/feeController.js";
+import {
   adminLogin,
   updateAdmin,
   addAdmin,
@@ -60,5 +66,9 @@ router.post("/deletefaculty", auth, deleteFaculty);
 router.post("/deletestudent", auth, deleteStudent);
 router.post("/deletedepartment", auth, deleteDepartment);
 router.post("/deletesubject", auth, deleteSubject);
+router.get("/fees", auth, getAdminFees);
+router.post("/fees/assign", auth, assignFeeToStudent);
+router.post("/fees/batch", auth, assignFeeToBatch);
+router.get("/fees/report", auth, getFeeReportByClass);
 
 export default router;
