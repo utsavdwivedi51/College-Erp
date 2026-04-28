@@ -10,6 +10,21 @@ import { useSelector } from "react-redux";
 import Notice from "../notices/Notice";
 import ShowNotice from "../notices/ShowNotice";
 import ReplyIcon from "@mui/icons-material/Reply";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  LineChart,
+  Line,
+  CartesianGrid,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
 const Body = () => {
   const [open, setOpen] = useState(false);
   const [openNotice, setOpenNotice] = useState({});
@@ -19,6 +34,12 @@ const Body = () => {
   const faculties = useSelector((state) => state.admin.allFaculty);
   const admins = useSelector((state) => state.admin.allAdmin);
   const departments = useSelector((state) => state.admin.allDepartment);
+  const dashboardStats = useSelector((state) => state.admin.dashboardStats);
+  const passPercentageData = dashboardStats?.passPercentageData || [];
+  const facultyDistributionData =
+    dashboardStats?.facultyDistributionData || [];
+  const enrollmentTrendsData = dashboardStats?.enrollmentTrendsData || [];
+  const pieColors = ["#6366f1", "#06b6d4", "#22c55e", "#f59e0b", "#ef4444"];
 
   return (
     <div className="flex-[0.8] mt-3">
@@ -27,7 +48,7 @@ const Body = () => {
           <HomeIcon />
           <h1 className="font-semibold">Dashboard</h1>
         </div>
-        <div className="flex flex-col mr-5 space-y-4 overflow-y-hidden">
+        <div className="flex flex-col mr-5 space-y-4 overflow-y-auto pr-2 pb-2">
           <div className="bg-white h-[8.75rem] rounded-2xl border border-slate-100 shadow-sm grid grid-cols-4 justify-between px-8 items-center space-x-4">
             <div className="flex items-center space-x-4 border-r border-slate-100">
               <EngineeringIcon
@@ -104,6 +125,104 @@ const Body = () => {
                 ) : (
                   <ShowNotice notice={openNotice} />
                 )}
+              </div>
+            </div>
+          </div>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-slate-700 font-semibold">Analytics Overview</h2>
+              <span className="text-xs text-slate-400">
+                Updated with latest tests & attendance
+              </span>
+            </div>
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+              <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-4">
+                <h3 className="text-sm font-semibold text-slate-700 mb-2">
+                  Department-wise Pass %
+                </h3>
+                <div className="h-56">
+                  {passPercentageData.length ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={passPercentageData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                        <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="passPercentage" fill="#6366f1" radius={[6, 6, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-sm text-slate-400">
+                      No pass percentage data yet.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-4">
+                <h3 className="text-sm font-semibold text-slate-700 mb-2">
+                  Faculty Load Distribution
+                </h3>
+                <div className="h-56">
+                  {facultyDistributionData.length ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Tooltip />
+                        <Legend />
+                        <Pie
+                          data={facultyDistributionData}
+                          dataKey="count"
+                          nameKey="name"
+                          innerRadius={45}
+                          outerRadius={80}
+                          paddingAngle={4}
+                        >
+                          {facultyDistributionData.map((entry, index) => (
+                            <Cell
+                              key={`cell-${entry.name}-${index}`}
+                              fill={pieColors[index % pieColors.length]}
+                            />
+                          ))}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-sm text-slate-400">
+                      No faculty distribution data yet.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-4">
+                <h3 className="text-sm font-semibold text-slate-700 mb-2">
+                  Enrollment Trends
+                </h3>
+                <div className="h-56">
+                  {enrollmentTrendsData.length ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={enrollmentTrendsData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                        <YAxis tick={{ fontSize: 12 }} />
+                        <Tooltip />
+                        <Legend />
+                        <Line
+                          type="monotone"
+                          dataKey="students"
+                          stroke="#0ea5e9"
+                          strokeWidth={3}
+                          dot={{ r: 3 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-sm text-slate-400">
+                      No enrollment trend data yet.
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

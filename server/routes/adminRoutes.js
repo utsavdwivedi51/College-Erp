@@ -1,5 +1,6 @@
 import express from "express";
 import auth from "../middleware/auth.js";
+import { getAdminDashboardStats } from "../controller/dashboardController.js";
 import {
   adminLogin,
   updateAdmin,
@@ -33,6 +34,7 @@ const router = express.Router();
 
 router.post("/login", adminLogin);
 router.post("/updatepassword", auth, updatedPassword);
+router.get("/dashboard-stats", auth, getAdminDashboardStats);
 router.get("/getallstudent", auth, getAllStudent);
 router.post("/createnotice", auth, createNotice);
 router.get("/getallfaculty", auth, getAllFaculty);

@@ -12,6 +12,7 @@ import {
   UPDATE_ASSIGNMENT,
   DELETE_ASSIGNMENT,
   GET_ASSIGNMENT_SUBMISSIONS,
+  GET_FACULTY_DASHBOARD_STATS,
 } from "../actionTypes";
 
 const initialState = {
@@ -27,6 +28,7 @@ const initialState = {
   assignmentCreated: false,
   assignmentUpdated: false,
   assignmentDeleted: false,
+  dashboardStats: null,
 };
 
 const facultyReducer = (state = initialState, action) => {
@@ -91,6 +93,11 @@ const facultyReducer = (state = initialState, action) => {
       return {
         ...state,
         assignmentSubmissions: action.payload,
+      };
+    case GET_FACULTY_DASHBOARD_STATS:
+      return {
+        ...state,
+        dashboardStats: action.payload,
       };
 
     default:

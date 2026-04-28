@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { getNotice } from "../../redux/actions/adminActions";
+import { getFacultyDashboardStats } from "../../redux/actions/facultyActions";
 import Body from "./Body";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
@@ -9,6 +10,7 @@ const FacultyHome = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getNotice());
+    dispatch(getFacultyDashboardStats());
   }, [dispatch]);
   return (
     <div className="bg-[#d6d9e0] h-screen flex items-center justify-center">

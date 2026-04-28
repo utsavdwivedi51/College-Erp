@@ -6,6 +6,7 @@ import {
   getAllAdmin,
   getAllDepartment,
   getNotice,
+  getAdminDashboardStats,
 } from "../../redux/actions/adminActions";
 import Body from "./Body";
 import Header from "./Header";
@@ -19,6 +20,7 @@ const AdminHome = () => {
     dispatch(getAllAdmin());
     dispatch(getAllDepartment());
     dispatch(getNotice());
+    dispatch(getAdminDashboardStats());
   }, [dispatch]);
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 p-4 md:p-6 flex items-center justify-center">

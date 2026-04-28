@@ -25,6 +25,7 @@ import {
   GET_NOTICE,
   SET_CREATED_FACULTY_CREDENTIALS,
   SET_BULK_OPERATION_RESULT,
+  GET_ADMIN_DASHBOARD_STATS,
 } from "../actionTypes";
 import * as api from "../api";
 
@@ -88,6 +89,18 @@ export const getAllSubject = () => async (dispatch) => {
   try {
     const { data } = await api.getAllSubject();
     dispatch({ type: GET_ALL_SUBJECT, payload: data });
+  } catch (error) {
+    console.log("Redux Error", error);
+  }
+};
+
+export const getAdminDashboardStats = () => async (dispatch) => {
+  try {
+    const { data } = await api.getAdminDashboardStats();
+    dispatch({
+      type: GET_ADMIN_DASHBOARD_STATS,
+      payload: data?.result || data,
+    });
   } catch (error) {
     console.log("Redux Error", error);
   }

@@ -26,6 +26,7 @@ import {
   GET_NOTICE,
   SET_CREATED_FACULTY_CREDENTIALS,
   SET_BULK_OPERATION_RESULT,
+  GET_ADMIN_DASHBOARD_STATS,
 } from "../actionTypes";
 
 const initialState = {
@@ -55,6 +56,7 @@ const initialState = {
   noticeCreated: false,
   createdFacultyCredentials: null,
   bulkOperationResult: null,
+  dashboardStats: null,
 };
 
 const adminReducer = (state = initialState, action) => {
@@ -189,6 +191,11 @@ const adminReducer = (state = initialState, action) => {
       return {
         ...state,
         allStudent: action.payload,
+      };
+    case GET_ADMIN_DASHBOARD_STATS:
+      return {
+        ...state,
+        dashboardStats: action.payload,
       };
     default:
       return state;

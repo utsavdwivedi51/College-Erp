@@ -8,6 +8,7 @@ import {
   GET_SUBJECT,
   GET_STUDENT_ASSIGNMENTS,
   SUBMIT_ASSIGNMENT,
+  GET_STUDENT_DASHBOARD_STATS,
 } from "../actionTypes";
 import * as api from "../api";
 
@@ -85,6 +86,18 @@ export const getAttendance =
       dispatch({ type: SET_ERRORS, payload: error.response.data });
     }
   };
+
+export const getStudentDashboardStats = () => async (dispatch) => {
+  try {
+    const { data } = await api.getStudentDashboardStats();
+    dispatch({
+      type: GET_STUDENT_DASHBOARD_STATS,
+      payload: data?.result || data,
+    });
+  } catch (error) {
+    dispatch({ type: SET_ERRORS, payload: error.response.data });
+  }
+};
 
 export const getStudentAssignments = () => async (dispatch) => {
   try {

@@ -5,6 +5,7 @@ import {
   getAttendance,
   getSubject,
   getTestResult,
+  getStudentDashboardStats,
 } from "../../redux/actions/studentActions";
 
 import Body from "./Body";
@@ -35,6 +36,7 @@ const StudentHome = () => {
       )
     );
     dispatch(getNotice());
+    dispatch(getStudentDashboardStats());
   }, [dispatch, userResult]);
 
   return (

@@ -7,6 +7,7 @@ import {
   ATTENDANCE,
   GET_STUDENT_ASSIGNMENTS,
   SUBMIT_ASSIGNMENT,
+  GET_STUDENT_DASHBOARD_STATS,
 } from "../actionTypes";
 
 const initialState = {
@@ -21,6 +22,7 @@ const initialState = {
   attendance: [],
   assignments: [],
   assignmentSubmitted: false,
+  dashboardStats: null,
 };
 
 const studentReducer = (state = initialState, action) => {
@@ -60,6 +62,11 @@ const studentReducer = (state = initialState, action) => {
       return {
         ...state,
         assignmentSubmitted: action.payload,
+      };
+    case GET_STUDENT_DASHBOARD_STATS:
+      return {
+        ...state,
+        dashboardStats: action.payload,
       };
 
     default:

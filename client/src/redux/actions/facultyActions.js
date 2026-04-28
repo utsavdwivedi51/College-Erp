@@ -13,6 +13,7 @@ import {
   UPDATE_ASSIGNMENT,
   DELETE_ASSIGNMENT,
   GET_ASSIGNMENT_SUBMISSIONS,
+  GET_FACULTY_DASHBOARD_STATS,
 } from "../actionTypes";
 import * as api from "../api";
 
@@ -63,6 +64,18 @@ export const getTest = (formData) => async (dispatch) => {
   try {
     const { data } = await api.getTest(formData);
     dispatch({ type: GET_TEST, payload: data });
+  } catch (error) {
+    dispatch({ type: SET_ERRORS, payload: error.response.data });
+  }
+};
+
+export const getFacultyDashboardStats = () => async (dispatch) => {
+  try {
+    const { data } = await api.getFacultyDashboardStats();
+    dispatch({
+      type: GET_FACULTY_DASHBOARD_STATS,
+      payload: data?.result || data,
+    });
   } catch (error) {
     dispatch({ type: SET_ERRORS, payload: error.response.data });
   }

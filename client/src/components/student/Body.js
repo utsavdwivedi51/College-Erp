@@ -10,6 +10,21 @@ import ShowNotice from "../notices/ShowNotice";
 import { useSelector } from "react-redux";
 import ReplyIcon from "@mui/icons-material/Reply";
 import Notice from "../notices/Notice";
+import {
+  ResponsiveContainer,
+  RadarChart,
+  Radar,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  CartesianGrid,
+} from "recharts";
 const Body = () => {
   const [open, setOpen] = useState(false);
   const [openNotice, setOpenNotice] = useState({});
@@ -18,6 +33,11 @@ const Body = () => {
   const attendance = useSelector((state) => state.student.attendance.result);
   const user = JSON.parse(localStorage.getItem("user"));
   const subjects = useSelector((state) => state.admin.subjects.result);
+  const dashboardStats = useSelector((state) => state.student.dashboardStats);
+  const radarData = dashboardStats?.radarData || [];
+  const comparisonData = dashboardStats?.comparisonData || [];
+  const rank = dashboardStats?.rank || "N/A";
+  const totalStudentsInClass = dashboardStats?.totalStudentsInClass || 0;
   var totalAttendance = 0;
   console.log(attendance);
 
@@ -115,6 +135,79 @@ const Body = () => {
                   ))
                 ) : (
                   <ShowNotice notice={openNotice} />
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-slate-700 font-semibold">Performance Analytics</h2>
+              <span className="text-xs text-slate-400">
+                Personalized insights for this term
+              </span>
+            </div>
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+              <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-4 xl:col-span-2">
+                <h3 className="text-sm font-semibold text-slate-700 mb-2">
+                  Subject-wise Performance Radar
+                </h3>
+                <div className="h-64">
+                  {radarData.length ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RadarChart data={radarData}>
+                        <PolarGrid />
+                        <PolarAngleAxis dataKey="subject" tick={{ fontSize: 11 }} />
+                        <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 10 }} />
+                        <Radar
+                          dataKey="score"
+                          stroke="#6366f1"
+                          fill="#6366f1"
+                          fillOpacity={0.4}
+                        />
+                        <Legend />
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-sm text-slate-400">
+                      No performance data yet.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 text-white rounded-2xl shadow-lg p-5 flex flex-col justify-between">
+                <div>
+                  <p className="text-sm uppercase tracking-wide text-white/70">Class Rank</p>
+                  <h3 className="text-4xl font-semibold mt-2">#{rank}</h3>
+                </div>
+                <div className="text-sm text-white/80">
+                  Out of {totalStudentsInClass || "-"} students
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-4">
+              <h3 className="text-sm font-semibold text-slate-700 mb-2">
+                Personal vs Class Average
+              </h3>
+              <div className="h-64">
+                {comparisonData.length ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={comparisonData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                      <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                      <YAxis tick={{ fontSize: 11 }} />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="personal" fill="#22c55e" radius={[6, 6, 0, 0]} />
+                      <Bar dataKey="average" fill="#38bdf8" radius={[6, 6, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full flex items-center justify-center text-sm text-slate-400">
+                    No comparison data yet.
+                  </div>
                 )}
               </div>
             </div>

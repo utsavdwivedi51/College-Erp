@@ -72,6 +72,8 @@ export const bulkUpdateUserStatus = (formData) =>
 export const getStudent = (student) =>
   API.post("/api/admin/getstudent", student);
 export const getNotice = (notice) => API.post("/api/admin/getnotice", notice);
+export const getAdminDashboardStats = () =>
+  API.get("/api/admin/dashboard-stats");
 
 // Faculty
 
@@ -99,6 +101,8 @@ export const deleteAssignment = (assignmentId) =>
   API.delete(`/api/faculty/assignments/${assignmentId}`);
 export const getAssignmentSubmissions = (assignmentId) =>
   API.get(`/api/faculty/assignments/${assignmentId}/submissions`);
+export const getFacultyDashboardStats = () =>
+  API.get("/api/faculty/dashboard-stats");
 
 // Student
 
@@ -117,3 +121,5 @@ export const getAttendance = (attendance) =>
 export const getStudentAssignments = () => API.get("/api/student/assignments");
 export const submitAssignment = (assignmentId, data) =>
   API.post(`/api/student/assignments/${assignmentId}/submit`, data);
+export const getStudentDashboardStats = () =>
+  API.get("/api/student/dashboard-stats");
